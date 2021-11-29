@@ -5,7 +5,7 @@ const SliderComponent = () => {
   const ratingFilter = useStore((state) => state.ratingFilter)
   const setRatingFilter = useStore((state) => state.setRatingFilter)
   return (
-    <div className="flex flex-col items-center relative w-44">
+    <div className="flex flex-col items-center relative w-28">
       <Slider.Root
         className="relative flex items-center w-full h-14 select-none"
         defaultValue={[0]}
@@ -23,7 +23,7 @@ const SliderComponent = () => {
         />
       </Slider.Root>
       <div className="flex items-center w-full h-8 text-gray-500 mt bg-white p-2 rounded-lg">
-        {'Filter by rating: >= '}
+        {'Rating: >= '}
         <span className="font-bold">{ratingFilter[0]}</span>
       </div>
     </div>

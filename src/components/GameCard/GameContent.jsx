@@ -1,21 +1,28 @@
-import { animated as a, config, useSpring, useSpringRef, useChain } from '@react-spring/web'
-import { useEffect, useState } from 'react'
-import { LoremIpsum } from 'react-lorem-ipsum'
+import { animated as a, config, useChain, useSpring, useSpringRef } from '@react-spring/web'
+import { LoremIpsum, loremIpsum } from 'lorem-ipsum'
+import React, { useState } from 'react'
 import { getRandomRating, getRandomTags } from '../../utils'
 
-const GameContent = ({ cardIndex }) => {
+const lorem = new LoremIpsum({
+  wordsPerSentence: {
+    max: 16,
+    min: 4,
+  },
+})
+
+const GameContent = ({ cardIndex, playerRating, pressRating }) => {
   const springRate1Ref = useSpringRef()
   const springRate2Ref = useSpringRef()
-  const [rateA] = useState(getRandomRating())
-  const [rateB] = useState(getRandomRating())
+  const [introText] = useState(lorem.generateSentences(1))
+  const [descriptionText] = useState(lorem.generateSentences(4))
   const { rate1 } = useSpring({
     from: { rate1: 0 },
-    to: { rate1: rateA },
+    to: { rate1: pressRating },
     config: config.slow,
     ref: springRate1Ref,
     delay: 2000,
   })
-  const { rate2 } = useSpring({ from: { rate2: 0 }, to: { rate2: rateB }, config: config.slow, ref: springRate2Ref })
+  const { rate2 } = useSpring({ from: { rate2: 0 }, to: { rate2: playerRating }, config: config.slow, ref: springRate2Ref })
   useChain([springRate1Ref, springRate2Ref])
   const tags = getRandomTags()
 
@@ -34,12 +41,8 @@ const GameContent = ({ cardIndex }) => {
               </strong>
             ))}
           </div>
-          <div className="text-gray-700 italic text-lg tracking-wide antialiased mb-2">
-            <LoremIpsum avgWordsPerSentence={1} />
-          </div>
-          <div className="text-gray-700 text-lg tracking-wide antialiased mb-4">
-            <LoremIpsum avgWordsPerSentence={4} />
-          </div>
+          <div className="text-gray-700 italic text-lg tracking-wide antialiased mb-2">{introText}</div>
+          <div className="text-gray-700 text-lg tracking-wide antialiased mb-4">{descriptionText}</div>
           <div className="flex justify-evenly text-blue-gray-700 ">
             <div className="flex flex-col items-center">
               <p className="text-lg italic">Press</p>
@@ -63,4 +66,4 @@ const GameContent = ({ cardIndex }) => {
   )
 }
 
-export default GameContent
+export default React.memo(GameContent)

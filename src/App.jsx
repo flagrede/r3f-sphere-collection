@@ -6,12 +6,13 @@ import 'virtual:windi-devtools'
 import 'virtual:windi.css'
 import create from 'zustand'
 import Controls from './components/Controls/Controls'
+import { DEFAULT_CARD } from './constants'
 import Sphere from './Sphere'
 import './styles.css'
 
 export const useStore = create((set) => ({
   sphereControls: { left: false, right: false },
-  selectedIndex: 50,
+  selectedIndex: DEFAULT_CARD,
   cardHidden: false,
   selectedVector: new THREE.Vector3(),
   ratingFilter: [0],
@@ -61,7 +62,7 @@ export default function App() {
     }
 
     if (left || right) {
-      const newIndex = selectedIndex + (left ? -1 : 1)
+      const newIndex = selectedIndex !== null ? selectedIndex + (left ? -1 : 1) : DEFAULT_CARD
       setSelectedIndex(newIndex)
       updateControl(newIndex)
     }

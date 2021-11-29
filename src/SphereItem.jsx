@@ -26,7 +26,7 @@ const bgMaterialProps = {
   attenuationDistance: 0,
 }
 
-const SphereItem = ({ cardIndex, isSelected }) => {
+const SphereItem = ({ cardIndex, isSelected, id, playerRating, pressRating, filtered }) => {
   const ref = useRef()
   const planeRef = useRef()
   const selectedVector = useStore((state) => state.selectedVector)
@@ -38,6 +38,9 @@ const SphereItem = ({ cardIndex, isSelected }) => {
   const [{ scale }, scaleApi] = useSpring(() => ({
     scale: 0,
   }))
+  const { scaleGroup } = useSpring({
+    scaleGroup: filtered ? 0 : 1,
+  })
 
   useEffect(() => {
     if (ref.current !== undefined) {
@@ -55,7 +58,7 @@ const SphereItem = ({ cardIndex, isSelected }) => {
       zoomPositionVector.copy(ref.current.position)
       selectedVector.copy(ref.current.position).multiplyScalar(-1)
       vectorUpdateTimeout = setTimeout(() => {
-        zoomPositionVector.copy(ref.current.position).multiplyScalar(-0.5)
+        zoomPositionVector.copy(ref.current.position).multiplyScalar(-0.45)
         tempVector.copy(translationVector)
         tempVector.transformDirection(ref.current.matrixWorld).normalize().multiplyScalar(1.7)
         zoomPositionVector.add(tempVector)
@@ -89,7 +92,7 @@ const SphereItem = ({ cardIndex, isSelected }) => {
         setCardHidden(false)
       }}
     >
-      <group ref={ref}>
+      <a.group ref={ref} scale={scaleGroup}>
         <Suspense fallback="loading...">
           <GameCard cardIndex={cardIndex} isSelected={isSelected} />
         </Suspense>
@@ -99,11 +102,11 @@ const SphereItem = ({ cardIndex, isSelected }) => {
               <a.meshPhysicalMaterial attach="material" {...bgMaterialProps} />
             </Plane>
             <Html scale={0.1} position={[1.5, 0, 0]} distanceFactor={20} transform>
-              <GameContent cardIndex={cardIndex} />
+              <GameContent cardIndex={cardIndex} playerRating={playerRating} pressRating={pressRating} />
             </Html>
           </a.group>
         )}
-      </group>
+      </a.group>
     </A11y>
   )
 }

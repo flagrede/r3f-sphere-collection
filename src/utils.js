@@ -30,4 +30,12 @@ const getRandomTags = () => {
   return [tags[randomTagIndex1], tags[randomTagIndex2]]
 }
 
-export { getElementPosition, getRandomRating, getRandomTags, getData }
+const getNewIndex = ({ data, direction, currentIndex }) => {
+  const minSlice = direction < 0 ? 0 : currentIndex + 1
+  const maxSlice = direction < 0 ? currentIndex : data.length
+  const dataSliced = data.slice(minSlice, maxSlice)
+  const dataSort = direction < 0 ? dataSliced.reverse() : dataSliced
+  return dataSort.find((element) => !element.filtered)?.id || currentIndex
+}
+
+export { getElementPosition, getRandomRating, getRandomTags, getData, getNewIndex }

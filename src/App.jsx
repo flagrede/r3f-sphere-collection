@@ -1,6 +1,6 @@
 import { Stars } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import 'virtual:windi-devtools'
 import 'virtual:windi.css'
@@ -9,6 +9,7 @@ import Controls from './components/Controls/Controls'
 import { DEFAULT_CARD } from './constants'
 import Sphere from './Sphere'
 import './styles.css'
+import { getData, getNewIndex } from './utils'
 
 export const useStore = create((set) => ({
   sphereControls: { left: false, right: false },
@@ -33,7 +34,11 @@ export default function App() {
   const setRight = useStore((state) => state.setRight)
   const setLeft = useStore((state) => state.setLeft)
   const resetControls = useStore((state) => state.resetControls)
+  const ratingFilter = useStore((state) => state.ratingFilter)
   const cardVisibleRef = useRef(false)
+  const [data] = useState(getData())
+
+  const dataWithFiltered = useMemo(() => data.map((game) => ({ ...game, filtered: ratingFilter > game.pressRating })), [ratingFilter])
 
   const handleKeyDown = (event) => {
     if (event.key === 'ArrowLeft' && !left) {
@@ -53,7 +58,7 @@ export default function App() {
     let controlsTimeout
     const updateControl = (index) => {
       controlsTimeout = setTimeout(() => {
-        const newIndex = index + (left ? -1 : 1)
+        const newIndex = getNewIndex({ direction: left ? -1 : 1, currentIndex: index, data: dataWithFiltered })
         setSelectedIndex(newIndex)
         if (right || left) {
           updateControl(newIndex)
@@ -62,13 +67,16 @@ export default function App() {
     }
 
     if (left || right) {
-      const newIndex = selectedIndex !== null ? selectedIndex + (left ? -1 : 1) : DEFAULT_CARD
+      const newIndex =
+        selectedIndex !== null
+          ? getNewIndex({ direction: left ? -1 : 1, currentIndex: useStore.getState().selectedIndex, data: dataWithFiltered })
+          : DEFAULT_CARD
       setSelectedIndex(newIndex)
       updateControl(newIndex)
     }
 
     return () => clearInterval(controlsTimeout)
-  }, [left, right])
+  }, [left, right, dataWithFiltered])
 
   useEffect(() => {
     canvasContainerRef.current.focus()
@@ -79,7 +87,7 @@ export default function App() {
       <div className="w-full h-full outline-none" ref={canvasContainerRef} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} tabIndex="-1">
         <Canvas>
           <ambientLight intensity={0.5} />
-          <Sphere cardVisibleRef={cardVisibleRef} />
+          <Sphere cardVisibleRef={cardVisibleRef} data={dataWithFiltered} />
           <Stars />
           {/* <axisHelper /> */}
           {/* <Perf /> */}

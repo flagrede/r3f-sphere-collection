@@ -1,19 +1,15 @@
-import { A11y } from '@react-three/a11y'
 import { useFrame } from '@react-three/fiber'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { useStore } from './App'
-import { CARDS_NUMBER } from './constants'
 import SphereItem from './SphereItem'
-import { getData } from './utils'
 
 const originVector = new THREE.Vector3(0, 0, 0)
-const Sphere = ({ cardVisibleRef }) => {
-  const [data] = useState(getData())
+const Sphere = ({ cardVisibleRef, data }) => {
   const sphereRef = useRef()
   const selectedIndex = useStore((state) => state.selectedIndex)
-  const setSelectedIndex = useStore((state) => state.setSelectedIndex)
   const selectedVector = useStore((state) => state.selectedVector)
+  const setSelectedIndex = useStore((state) => state.setSelectedIndex)
   const ratingFilter = useStore((state) => state.ratingFilter)
 
   useFrame(({ camera }) => {
@@ -25,18 +21,16 @@ const Sphere = ({ cardVisibleRef }) => {
   })
 
   useEffect(() => {
-    setSelectedIndex(null)
-  }, [ratingFilter])
-
-  useEffect(() => {
     cardVisibleRef.current = false
   }, [selectedIndex])
 
-  const dataWithFiltered = useMemo(() => data.map((game) => ({ ...game, filtered: ratingFilter > game.pressRating })), [ratingFilter])
+  useEffect(() => {
+    setSelectedIndex(null)
+  }, [ratingFilter])
 
   return (
     <group ref={sphereRef}>
-      {dataWithFiltered.map(({ id, playerRating, pressRating, filtered }, index) => (
+      {data.map(({ id, playerRating, pressRating, filtered }, index) => (
         <SphereItem
           key={id}
           id={id}

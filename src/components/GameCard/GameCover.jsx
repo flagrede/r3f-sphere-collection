@@ -3,7 +3,7 @@ import { Image } from '@react-three/drei'
 import { useRef } from 'react'
 
 const GameCover = ({ cardIndex, isSelected }) => {
-  const imageIndex = cardIndex % 14
+  const imageIndex = cardIndex % 54
   const imageUrl = `images/games/${imageIndex}.jpeg`
   const { scale } = useSpring({ scale: isSelected ? [2, 2, 1] : [1, 1, 1] })
   const ref = useRef()

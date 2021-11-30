@@ -35,7 +35,7 @@ const Sphere = ({ cardVisibleRef, data }) => {
           key={id}
           id={id}
           cardIndex={index}
-          isSelected={selectedIndex === index}
+          isSelected={selectedIndex === id}
           playerRating={playerRating}
           pressRating={pressRating}
           filtered={filtered}

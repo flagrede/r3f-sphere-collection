@@ -29,7 +29,7 @@ const GameContent = ({ id, playerRating, pressRating }) => {
   return (
     <div className="flex justify-center">
       <div className="flex justify-end">
-        <div className="relative md:w-1/2 max-w-7xl rounded-lg p-8 bg-white border-t border-l border-r border-gray-300">
+        <div className="relative md:w-1/2 min-w-xl max-w-7xl rounded-lg p-8 bg-white border-t border-l border-r border-gray-300">
           <h1 className="text-center text-7xl bold antialiased mb-4 text-gray-700">Game {id}</h1>
           <div className="flex mb-4">
             {tags.map((tag, index) => (

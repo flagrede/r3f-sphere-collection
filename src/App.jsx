@@ -44,7 +44,13 @@ export default function App() {
 
   return (
     <>
-      <div className="w-full h-full outline-none" ref={canvasContainerRef} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} tabIndex="-1">
+      <div
+        className="w-full h-full focus:outline-none"
+        ref={canvasContainerRef}
+        onKeyDown={handleKeyDown}
+        onKeyUp={handleKeyUp}
+        tabIndex="-1"
+      >
         <Canvas>
           <ambientLight intensity={0.5} />
           <Sphere cardVisibleRef={cardVisibleRef} data={dataWithFiltered} />

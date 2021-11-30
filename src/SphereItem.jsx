@@ -9,6 +9,7 @@ import GameContent from './components/GameCard/GameContent'
 import GameCard from './components/GameCard/GameCover'
 import useInitialPosition from './hooks/useInitialPosition'
 import useSelectedPosition from './hooks/useSelectedPosition'
+import useMediaQuery from './hooks/useMediaQuery'
 
 const cameraVector = new THREE.Vector3()
 const tempVector = new THREE.Vector3(0, 0, 0)
@@ -41,6 +42,7 @@ const SphereItem = ({ cardIndex, isSelected, id, playerRating, pressRating, filt
   const { scaleGroup } = useSpring({
     scaleGroup: filtered ? 0 : 1,
   })
+  const isDesktop = useMediaQuery('(min-width: 960px)')
 
   useInitialPosition({ cameraVector, cardIndex, initialPositionVector, itemRef: ref })
   useSelectedPosition({ isSelected, selectedVector, tempVector, zoomPositionVector, translationVector, itemRef: ref })
@@ -78,7 +80,7 @@ const SphereItem = ({ cardIndex, isSelected, id, playerRating, pressRating, filt
             <Plane args={[7, 4]} ref={planeRef} position={[1.7, 0, -0.1]}>
               <a.meshPhysicalMaterial attach="material" {...bgMaterialProps} />
             </Plane>
-            <Html scale={0.1} position={[1.5, 0, 0]} distanceFactor={20} transform>
+            <Html scale={0.1} position={[isDesktop ? 1.5 : 2, 0, 0]} distanceFactor={20} transform>
               <GameContent id={id} playerRating={playerRating} pressRating={pressRating} />
             </Html>
           </a.group>

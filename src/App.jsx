@@ -7,6 +7,8 @@ import 'virtual:windi.css'
 import create from 'zustand'
 import Controls from './components/Controls/Controls'
 import { DEFAULT_CARD } from './constants'
+import useControlsUpdate from './hooks/useControlsUpdate'
+import useKeyboardControls from './hooks/useKeyboardControls'
 import Sphere from './Sphere'
 import './styles.css'
 import { getData, getNewIndex } from './utils'
@@ -28,55 +30,13 @@ export const useStore = create((set) => ({
 
 export default function App() {
   const canvasContainerRef = useRef()
-  const selectedIndex = useStore((state) => state.selectedIndex)
-  const setSelectedIndex = useStore((state) => state.setSelectedIndex)
-  const { left, right } = useStore((state) => state.sphereControls)
-  const setRight = useStore((state) => state.setRight)
-  const setLeft = useStore((state) => state.setLeft)
-  const resetControls = useStore((state) => state.resetControls)
   const ratingFilter = useStore((state) => state.ratingFilter)
   const cardVisibleRef = useRef(false)
   const [data] = useState(getData())
-
   const dataWithFiltered = useMemo(() => data.map((game) => ({ ...game, filtered: ratingFilter > game.pressRating })), [ratingFilter])
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'ArrowLeft' && !left) {
-      setLeft()
-    } else if (event.key === 'ArrowRight' && !right) {
-      setRight()
-    }
-  }
-
-  const handleKeyUp = (event) => {
-    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      resetControls()
-    }
-  }
-
-  useEffect(() => {
-    let controlsTimeout
-    const updateControl = (index) => {
-      controlsTimeout = setTimeout(() => {
-        const newIndex = getNewIndex({ direction: left ? -1 : 1, currentIndex: index, data: dataWithFiltered })
-        setSelectedIndex(newIndex)
-        if (right || left) {
-          updateControl(newIndex)
-        }
-      }, 500)
-    }
-
-    if (left || right) {
-      const newIndex =
-        selectedIndex !== null
-          ? getNewIndex({ direction: left ? -1 : 1, currentIndex: useStore.getState().selectedIndex, data: dataWithFiltered })
-          : DEFAULT_CARD
-      setSelectedIndex(newIndex)
-      updateControl(newIndex)
-    }
-
-    return () => clearInterval(controlsTimeout)
-  }, [left, right, dataWithFiltered])
+  useControlsUpdate({ data: dataWithFiltered })
+  const { handleKeyDown, handleKeyUp } = useKeyboardControls()
 
   useEffect(() => {
     canvasContainerRef.current.focus()
@@ -89,8 +49,6 @@ export default function App() {
           <ambientLight intensity={0.5} />
           <Sphere cardVisibleRef={cardVisibleRef} data={dataWithFiltered} />
           <Stars />
-          {/* <axisHelper /> */}
-          {/* <Perf /> */}
         </Canvas>
         <Controls />
       </div>

@@ -2,12 +2,13 @@ import { animated as a, useSpring } from '@react-spring/three'
 import { A11y } from '@react-three/a11y'
 import { Html, Plane } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
-import React, { Suspense, useEffect, useRef, useState } from 'react'
+import React, { Suspense, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { useStore } from './App'
 import GameContent from './components/GameCard/GameContent'
 import GameCard from './components/GameCard/GameCover'
-import { getElementPosition } from './utils'
+import useInitialPosition from './hooks/useInitialPosition'
+import useSelectedPosition from './hooks/useSelectedPosition'
 
 const cameraVector = new THREE.Vector3()
 const tempVector = new THREE.Vector3(0, 0, 0)
@@ -31,7 +32,6 @@ const SphereItem = ({ cardIndex, isSelected, id, playerRating, pressRating, filt
   const planeRef = useRef()
   const selectedVector = useStore((state) => state.selectedVector)
   const setSelectedIndex = useStore((state) => state.setSelectedIndex)
-  const setCardHidden = useStore((state) => state.setCardHidden)
   const [initialPositionVector] = useState(new THREE.Vector3())
   const [zoomPositionVector] = useState(new THREE.Vector3())
   const isZoomCompleteRef = useRef(false)
@@ -42,30 +42,8 @@ const SphereItem = ({ cardIndex, isSelected, id, playerRating, pressRating, filt
     scaleGroup: filtered ? 0 : 1,
   })
 
-  useEffect(() => {
-    if (ref.current !== undefined) {
-      const { radius, phi, theta } = getElementPosition({ index: cardIndex })
-      ref.current.position.setFromSphericalCoords(radius, phi, theta)
-      initialPositionVector.copy(ref.current.position)
-      cameraVector.copy(ref.current.position).multiplyScalar(-2)
-      ref.current.lookAt(cameraVector)
-    }
-  }, [cardIndex])
-
-  useEffect(() => {
-    let vectorUpdateTimeout
-    if (isSelected) {
-      zoomPositionVector.copy(ref.current.position)
-      selectedVector.copy(ref.current.position).multiplyScalar(-1)
-      vectorUpdateTimeout = setTimeout(() => {
-        zoomPositionVector.copy(ref.current.position).multiplyScalar(-0.45)
-        tempVector.copy(translationVector)
-        tempVector.transformDirection(ref.current.matrixWorld).normalize().multiplyScalar(1.7)
-        zoomPositionVector.add(tempVector)
-      }, 500)
-    }
-    return () => clearTimeout(vectorUpdateTimeout)
-  }, [isSelected])
+  useInitialPosition({ cameraVector, cardIndex, initialPositionVector, itemRef: ref })
+  useSelectedPosition({ isSelected, selectedVector, tempVector, zoomPositionVector, translationVector, itemRef: ref })
 
   useFrame(() => {
     if (isSelected && !useStore.getState().cardHidden) {
@@ -88,13 +66,12 @@ const SphereItem = ({ cardIndex, isSelected, id, playerRating, pressRating, filt
       role="button"
       description="Show game card"
       actionCall={() => {
-        setSelectedIndex(cardIndex)
-        setCardHidden(false)
+        setSelectedIndex(id)
       }}
     >
       <a.group ref={ref} scale={scaleGroup}>
         <Suspense fallback="loading...">
-          <GameCard cardIndex={cardIndex} isSelected={isSelected} />
+          <GameCard id={id} isSelected={isSelected} />
         </Suspense>
         {isSelected && (
           <a.group scale={scale}>
@@ -102,7 +79,7 @@ const SphereItem = ({ cardIndex, isSelected, id, playerRating, pressRating, filt
               <a.meshPhysicalMaterial attach="material" {...bgMaterialProps} />
             </Plane>
             <Html scale={0.1} position={[1.5, 0, 0]} distanceFactor={20} transform>
-              <GameContent cardIndex={cardIndex} playerRating={playerRating} pressRating={pressRating} />
+              <GameContent id={id} playerRating={playerRating} pressRating={pressRating} />
             </Html>
           </a.group>
         )}

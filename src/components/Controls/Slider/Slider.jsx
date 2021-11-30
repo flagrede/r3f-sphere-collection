@@ -1,3 +1,4 @@
+import { StarFilledIcon } from '@radix-ui/react-icons'
 import * as Slider from '@radix-ui/react-slider'
 import { useStore } from '../../../App'
 
@@ -22,9 +23,9 @@ const SliderComponent = () => {
           data-tip="1.0"
         />
       </Slider.Root>
-      <div className="flex items-center w-full h-8 text-gray-500 mt bg-white p-2 rounded-lg">
-        {'Rating: >= '}
-        <span className="font-bold">{ratingFilter[0]}</span>
+      <div className="flex justify-center items-center w-full h-8 text-gray-500 mt bg-white p-2 rounded-lg">
+        <StarFilledIcon />
+        <div className="flex items-center ml-2 font-bold">{ratingFilter[0]}</div>
       </div>
     </div>
   )

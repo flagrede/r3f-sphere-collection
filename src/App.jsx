@@ -50,6 +50,7 @@ export default function App() {
         onKeyDown={handleKeyDown}
         onKeyUp={handleKeyUp}
         tabIndex="-1"
+        style={{ touchAction: 'none' }}
       >
         <Canvas>
           <ambientLight intensity={0.5} />

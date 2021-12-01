@@ -52,7 +52,7 @@ export default function App() {
         tabIndex="-1"
         style={{ touchAction: 'none' }}
       >
-        <Canvas>
+        <Canvas dpr={[1, 2]}>
           <ambientLight intensity={0.5} />
           <Sphere cardVisibleRef={cardVisibleRef} data={dataWithFiltered} />
           <Stars />

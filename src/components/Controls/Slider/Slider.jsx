@@ -25,7 +25,10 @@ const SliderComponent = () => {
       </Slider.Root>
       <div className="flex justify-center items-center w-full h-8 text-gray-500 mt bg-white p-2 rounded-lg">
         <StarFilledIcon />
-        <div className="flex items-center ml-2 font-bold">>{ratingFilter[0]}</div>
+        <div className="flex items-center ml-2 font-bold">
+          {'>'}
+          {ratingFilter[0]}
+        </div>
       </div>
     </div>
   )
